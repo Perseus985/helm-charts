@@ -1,0 +1,64 @@
+components:
+  # Service component: references the chart sub-component (standard chart-only shape) plus an image
+  # sub-component carrying the images the infra Keycloak CR renders directly. This matches the operator's
+  # image/chart gotemplate referencePath ([{infra},{chart}] / [{infra},{image}]); declaring the images as
+  # direct resources here would not resolve.
+  - name: {{ .COMPONENT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    componentReferences:
+      - name: chart
+        componentName: github.com/platform-mesh/helm-charts/{{ .COMPONENT_SHORT_NAME }}
+        version: {{ .VERSION }}
+      - name: image
+        componentName: github.com/platform-mesh/images/{{ .COMPONENT_SHORT_NAME }}
+        version: {{ .VERSION }}
+    sources:
+      - name: chart
+        type: git
+        version: {{ .VERSION }}
+        access:
+          commit: {{ .COMMIT }}
+          repoUrl: {{ .CHART_REPO }}
+          type: gitHub
+
+  - name: github.com/platform-mesh/helm-charts/{{ .COMPONENT_SHORT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    resources:
+      - name: chart
+        type: helmChart
+        relation: external
+        version: {{ .VERSION }}
+        access:
+          type: ociArtifact
+          imageReference: "{{ .CHART_OCI_PATH }}:{{ .VERSION }}"
+
+  - name: github.com/platform-mesh/images/{{ .COMPONENT_SHORT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    # Images the infra Keycloak CR renders directly (server + wait-for-db init), declared so the
+    # release/seed CTF transfer can mirror + localize them to the in-cluster registry; the operator
+    # injects the localized ref into the HelmRelease values via the profile imageResources entries.
+    resources:
+      # custom-images/keycloak has a kc.sh-style entrypoint the Keycloak CR's args
+      # (-Djgroups… start --optimized) require — the bitnami upstream-images variant is NOT a drop-in
+      # (its entrypoint execs args directly → "exec: -D: invalid option"). Use :v26.6.0
+      # (NB: :26.6.0 without the v is a different build).
+      - name: keycloak-image
+        type: ociImage
+        relation: external
+        version: "v26.6.0"
+        access:
+          type: ociArtifact
+          imageReference: "ghcr.io/platform-mesh/custom-images/keycloak:v26.6.0"
+      - name: busybox-image
+        type: ociImage
+        relation: external
+        version: "1.37"
+        access:
+          type: ociArtifact
+          imageReference: "docker.io/library/busybox:1.37"

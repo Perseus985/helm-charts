@@ -1,0 +1,60 @@
+components:
+  # Service component: chart sub-component (standard chart-only shape) plus an image sub-component for the
+  # images the observability chart renders directly (CRs/Jobs). Matches the operator's referencePath
+  # ([{observability},{chart}] / [{observability},{image}]); direct resources here would not resolve.
+  - name: {{ .COMPONENT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    componentReferences:
+      - name: chart
+        componentName: github.com/platform-mesh/helm-charts/{{ .COMPONENT_SHORT_NAME }}
+        version: {{ .VERSION }}
+      - name: image
+        componentName: github.com/platform-mesh/images/{{ .COMPONENT_SHORT_NAME }}
+        version: {{ .VERSION }}
+    sources:
+      - name: chart
+        type: git
+        version: {{ .VERSION }}
+        access:
+          commit: {{ .COMMIT }}
+          repoUrl: {{ .CHART_REPO }}
+          type: gitHub
+
+  - name: github.com/platform-mesh/helm-charts/{{ .COMPONENT_SHORT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    resources:
+      - name: chart
+        type: helmChart
+        relation: external
+        version: {{ .VERSION }}
+        access:
+          type: ociArtifact
+          imageReference: "{{ .CHART_OCI_PATH }}:{{ .VERSION }}"
+
+  - name: github.com/platform-mesh/images/{{ .COMPONENT_SHORT_NAME }}
+    version: {{ .VERSION }}
+    provider:
+      name: The Platform Mesh Team
+    # Sub-images the observability chart renders directly (CRs/Jobs), declared so the release/seed CTF
+    # transfer can mirror + localize them. Refs pinned to match charts/observability/values.yaml.
+    resources:
+      - name: otel-collector-image
+        type: ociImage
+        relation: external
+        version: "0.153.0"
+        access:
+          type: ociArtifact
+          imageReference: "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.153.0"
+      # OCM requires a semver-ish resource version; bitnami/kubectl ships only :latest on docker.io,
+      # so the digest is authoritative and this version is metadata (kubectl line the image tracks).
+      - name: kubectl-image
+        type: ociImage
+        relation: external
+        version: "1.34.0"
+        access:
+          type: ociArtifact
+          imageReference: "docker.io/bitnami/kubectl@sha256:08afc880eea24f36572644ccae85fb3e573a6ff1b7161135a3ae9a5eab222df2"

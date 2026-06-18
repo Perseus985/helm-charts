@@ -98,7 +98,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: extractor
-          image: bitnami/kubectl:latest
+          image: {{ include "observability.image" .Values.serviceMonitors.kcp.certExtractor.image }}
           command:
             - /bin/bash
             - -c

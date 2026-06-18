@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   instances: {{ .Values.keycloak.operator.instances }}
-  image: {{ .Values.keycloak.operator.image.repository }}:{{ .Values.keycloak.operator.image.tag | default .Chart.AppVersion }}
+  image: {{ include "infra.image" .Values.keycloak.operator.image }}
   db:
     vendor: postgres
     host: {{ .Values.keycloak.operator.db.host }}
@@ -39,7 +39,7 @@ spec:
       spec:
         initContainers:
           - name: wait-for-db
-            image: busybox:1.37
+            image: {{ include "infra.image" .Values.keycloak.operator.waitForDb.image }}
             command: ['sh', '-c', 'until nc -z {{ .Values.keycloak.operator.db.host }} {{ .Values.keycloak.operator.db.port }}; do echo "Waiting for PostgreSQL..."; sleep 2; done']
         containers:
           - imagePullPolicy: IfNotPresent

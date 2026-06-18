@@ -167,13 +167,20 @@ A Helm chart for Kubernetes
 | keycloak.operator.health.startup.failureThreshold | int | `600` |  |
 | keycloak.operator.health.startup.path | string | `"/keycloak/health"` |  |
 | keycloak.operator.hostname | string | `"https://portal.localhost:8443"` | Keycloak hostname (used in the Keycloak CR hostname.hostname field). Must not include a path — the operator auto-derives http-relative-path from any path component, which conflicts with the value baked into the image. |
-| keycloak.operator.image.repository | string | `"ghcr.io/platform-mesh/custom-images/keycloak"` | Keycloak image repository |
-| keycloak.operator.image.tag | string | `"latest@sha256:207cdc27e513bc7a6a6d2e429e1a9346dd62654c92573866c4a091b844f7b800"` | Keycloak image tag |
+| keycloak.operator.image.digest | string | `""` | The Keycloak image digest (when set, overrides tag: registry/repository@digest) |
+| keycloak.operator.image.registry | string | `"ghcr.io"` | The Keycloak image registry |
+| keycloak.operator.image.repository | string | `"platform-mesh/custom-images/keycloak"` | The Keycloak image repository path (without registry) |
+| keycloak.operator.image.tag | string | `"v26.6.0"` | The Keycloak image tag (use v26.6.0, NOT 26.6.0 — the latter is a different build) |
 | keycloak.operator.instances | int | `1` | Number of Keycloak instances |
 | keycloak.operator.resources.limits.cpu | string | `"2"` |  |
 | keycloak.operator.resources.limits.memory | string | `"2Gi"` |  |
 | keycloak.operator.resources.requests.cpu | string | `"750m"` |  |
 | keycloak.operator.resources.requests.memory | string | `"1Gi"` |  |
+| keycloak.operator.waitForDb | object | `{"image":{"digest":"","registry":"docker.io","repository":"library/busybox","tag":"1.37"}}` | Image for the wait-for-db init container (split schema so it is air-gap localizable) |
+| keycloak.operator.waitForDb.image.digest | string | `""` | The init image digest (when set, overrides tag) |
+| keycloak.operator.waitForDb.image.registry | string | `"docker.io"` | The init image registry |
+| keycloak.operator.waitForDb.image.repository | string | `"library/busybox"` | The init image repository path (without registry) |
+| keycloak.operator.waitForDb.image.tag | string | `"1.37"` | The init image tag |
 | keycloak.service | object | `{"name":"keycloak","port":80}` | service configuration |
 | keycloak.service.name | string | `"keycloak"` | service name |
 | keycloak.service.port | int | `80` | service port |

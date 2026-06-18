@@ -41,8 +41,16 @@ otelCollector:
   mode: statefulset
   # -- Number of collector replicas
   replicas: 1
-  # -- Collector image (use contrib for prometheusremotewrite exporter)
-  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.153.0
+  # -- Collector image (use contrib for prometheusremotewrite exporter; split schema so it is air-gap localizable)
+  image:
+    # -- The collector image registry
+    registry: ghcr.io
+    # -- The collector image repository path (without registry)
+    repository: open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
+    # -- The collector image tag
+    tag: "0.153.0"
+    # -- The collector image digest (when set, overrides tag)
+    digest: ""
   config:
     # -- Batch processor timeout before sending metrics
     batchTimeout: 10s
@@ -85,6 +93,18 @@ serviceMonitors:
   kcp:
     # -- Enable scraping kcp
     enabled: true
+    # -- Image for the cert-extractor Job (kubectl). bitnami/kubectl ships only :latest on
+    # docker.io now, so it is pinned by digest to stay reproducible and air-gap localizable.
+    certExtractor:
+      image:
+        # -- The cert-extractor image registry
+        registry: docker.io
+        # -- The cert-extractor image repository path (without registry)
+        repository: bitnami/kubectl
+        # -- The cert-extractor image tag
+        tag: "latest"
+        # -- The cert-extractor image digest (when set, overrides tag)
+        digest: "sha256:08afc880eea24f36572644ccae85fb3e573a6ff1b7161135a3ae9a5eab222df2"
     # -- Namespace where kcp runs
     namespace: platform-mesh-system
     # -- Labels to select kcp service

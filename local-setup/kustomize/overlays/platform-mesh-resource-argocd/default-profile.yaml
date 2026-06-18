@@ -105,8 +105,23 @@ data:
             istio:
               enabled: false
         infra:
-          # -- Allow the configuration of additional ocm resources
-          imageResources: []
+          # -- Localize the Keycloak server + wait-for-db init images for air-gap. kcp images stay
+          # unmanaged here (the kcp-operator places them via the kcp CR, not this HelmRelease).
+          imageResources:
+          - name: keycloak-image
+            resource: keycloak-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: infra
+              path: keycloak.operator.image.tag
+          - name: busybox-image
+            resource: busybox-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: infra
+              path: keycloak.operator.waitForDb.image.tag
           ignoreDifferences:
           - group: operator.kcp.io
             kind: FrontProxy
@@ -367,6 +382,22 @@ data:
           syncWave: 4
           enabled: false
           targetNamespace: observability
+          # -- Localize the otel-collector + cert-extractor (kubectl) images for air-gap.
+          imageResources:
+          - name: otel-collector-image
+            resource: otel-collector-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: observability
+              path: otelCollector.image.tag
+          - name: kubectl-image
+            resource: kubectl-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: observability
+              path: serviceMonitors.kcp.certExtractor.image.tag
           values:
             opentelemetry-collector:
               ports:

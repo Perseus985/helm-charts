@@ -171,7 +171,23 @@ data:
               enabled: false
         infra:
           enabled: true
-          imageResources: [] # Disable kcp-image OCM Resource to allow custom kcp.image.tag
+          # Localize the Keycloak server + wait-for-db init images for air-gap. kcp stays unmanaged
+          # (kcp-operator places kcp images via the kcp CR, not this HelmRelease) — hence no kcp entry.
+          imageResources:
+          - name: keycloak-image
+            resource: keycloak-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: infra
+              path: keycloak.operator.image.tag
+          - name: busybox-image
+            resource: busybox-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: infra
+              path: keycloak.operator.waitForDb.image.tag
           dependsOn:
           - name: keycloak-operator
             namespace: platform-mesh-system
@@ -608,6 +624,22 @@ data:
           syncWave: 4
           enabled: true
           targetNamespace: observability
+          # -- Localize the otel-collector + cert-extractor (kubectl) images for air-gap.
+          imageResources:
+          - name: otel-collector-image
+            resource: otel-collector-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: observability
+              path: otelCollector.image.tag
+          - name: kubectl-image
+            resource: kubectl-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: observability
+              path: serviceMonitors.kcp.certExtractor.image.tag
           dependsOn:
           - name: prometheus-operator-crds
             namespace: platform-mesh-system
