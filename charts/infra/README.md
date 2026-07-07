@@ -6,6 +6,10 @@ A Helm chart for Kubernetes
 ## Values
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| cnpg.cluster.image.digest | string | `""` | PostgreSQL image digest (when set, overrides tag) |
+| cnpg.cluster.image.registry | string | `"ghcr.io"` | PostgreSQL image registry |
+| cnpg.cluster.image.repository | string | `"cloudnative-pg/postgresql"` | PostgreSQL image repository (without registry) |
+| cnpg.cluster.image.tag | string | `"17.5"` | PostgreSQL image tag |
 | cnpg.cluster.instances | int | `2` |  |
 | cnpg.cluster.name | string | `"platform-mesh-pg"` |  |
 | cnpg.cluster.postgresql.maxConnections | string | `"200"` |  |
@@ -194,13 +198,19 @@ A Helm chart for Kubernetes
 | keycloak.operator.health.startup.failureThreshold | int | `600` |  |
 | keycloak.operator.health.startup.path | string | `"/keycloak/health"` |  |
 | keycloak.operator.hostname | string | `"https://portal.localhost:8443"` | Keycloak hostname (used in the Keycloak CR hostname.hostname field). Must not include a path — the operator auto-derives http-relative-path from any path component, which conflicts with the value baked into the image. |
-| keycloak.operator.image.repository | string | `"ghcr.io/platform-mesh/custom-images/keycloak"` | Keycloak image repository |
-| keycloak.operator.image.tag | string | `"latest@sha256:207cdc27e513bc7a6a6d2e429e1a9346dd62654c92573866c4a091b844f7b800"` | Keycloak image tag |
+| keycloak.operator.image.digest | string | `"sha256:207cdc27e513bc7a6a6d2e429e1a9346dd62654c92573866c4a091b844f7b800"` | Keycloak image digest (when set, overrides tag: registry/repository@digest) |
+| keycloak.operator.image.registry | string | `"ghcr.io"` | Keycloak image registry |
+| keycloak.operator.image.repository | string | `"platform-mesh/custom-images/keycloak"` | Keycloak image repository (without registry) |
+| keycloak.operator.image.tag | string | `"v26.6.0"` | Keycloak image tag (defaults to appVersion) |
 | keycloak.operator.instances | int | `1` | Number of Keycloak instances |
 | keycloak.operator.resources.limits.cpu | string | `"2"` |  |
 | keycloak.operator.resources.limits.memory | string | `"2Gi"` |  |
 | keycloak.operator.resources.requests.cpu | string | `"750m"` |  |
 | keycloak.operator.resources.requests.memory | string | `"1Gi"` |  |
+| keycloak.operator.waitForDb.image.digest | string | `""` | wait-for-db init container image digest (when set, overrides tag) |
+| keycloak.operator.waitForDb.image.registry | string | `"docker.io"` | wait-for-db init container image registry |
+| keycloak.operator.waitForDb.image.repository | string | `"library/busybox"` | wait-for-db init container image repository (without registry) |
+| keycloak.operator.waitForDb.image.tag | string | `"1.37"` | wait-for-db init container image tag |
 | keycloak.service | object | `{"name":"keycloak","port":80}` | service configuration |
 | keycloak.service.name | string | `"keycloak"` | service name |
 | keycloak.service.port | int | `80` | service port |
