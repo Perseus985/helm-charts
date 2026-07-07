@@ -298,10 +298,14 @@ dex:
   # -- Dex issuer URL (must match external browser-reachable URL)
   issuer: https://portal.localhost:8443/dex
   image:
-    # -- Dex image repository
-    repository: ghcr.io/dexidp/dex
+    # -- Dex image registry
+    registry: ghcr.io
+    # -- Dex image repository (without registry)
+    repository: dexidp/dex
     # -- Dex image tag
     tag: v2.42.0
+    # -- Dex image digest (when set, overrides tag: registry/repository@digest)
+    digest: "sha256:1b4a6eee8550240b0faedad04d984ca939513650e1d9bd423502c67355e3822f"
   service:
     # -- Dex service name
     name: dex

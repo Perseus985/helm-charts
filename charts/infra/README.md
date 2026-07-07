@@ -35,7 +35,9 @@ A Helm chart for Kubernetes
 | dex.health.readiness.initialDelaySeconds | int | `0` |  |
 | dex.health.readiness.path | string | `"/dex/healthz"` |  |
 | dex.health.readiness.periodSeconds | int | `10` |  |
-| dex.image.repository | string | `"ghcr.io/dexidp/dex"` | Dex image repository |
+| dex.image.digest | string | `"sha256:1b4a6eee8550240b0faedad04d984ca939513650e1d9bd423502c67355e3822f"` | Dex image digest (when set, overrides tag: registry/repository@digest) |
+| dex.image.registry | string | `"ghcr.io"` | Dex image registry |
+| dex.image.repository | string | `"dexidp/dex"` | Dex image repository (without registry) |
 | dex.image.tag | string | `"v2.42.0"` | Dex image tag |
 | dex.issuer | string | `"https://portal.localhost:8443/dex"` | Dex issuer URL (must match external browser-reachable URL) |
 | dex.resources.limits.cpu | string | `"200m"` |  |

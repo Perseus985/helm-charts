@@ -197,6 +197,14 @@ data:
               artifact: image
               for: infra
               path: cnpg.cluster.image.tag
+          - name: dex-image
+            resource: dex-image
+            resourceName: dex-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: infra
+              path: dex.image.tag
           dependsOn:
           - name: keycloak-operator
             namespace: platform-mesh-system
@@ -344,6 +352,14 @@ data:
               artifact: image
               for: keycloak-operator
               path: keycloakImage.tag
+          - name: keycloak-operator-image
+            resource: manager-image
+            resourceName: manager-image
+            annotations:
+              repo: oci
+              artifact: image
+              for: keycloak-operator
+              path: image.tag
           absoluteReferencePath:
             - name: keycloak-operator
             - name: chart
